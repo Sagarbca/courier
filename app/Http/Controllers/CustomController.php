@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\Alumuni;
+use App\Coordinator;
 use App\Teacher;
-use Illuminate\Http\Request;
 use App\Student;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 class CustomController extends Controller
@@ -18,9 +19,6 @@ class CustomController extends Controller
     {
         //
     }
-
-    //
-
     public function get(){
             echo 'hello';
     }
@@ -28,15 +26,11 @@ class CustomController extends Controller
 
         public function store(Request $request)
         {
-            //
-
             $grouped = collect($request->all())->flatMap(function ($item, $key) {
                 return [Str::snake($key) => $item];
             });
-
             $request_update = $grouped->toArray();
-
-//           dd(($request_update));
+            /*dd($request_update);*/
             $validator = Validator::make($request->all(), [
                 'firstName' => 'required_without:id|alpha',
                 'lastName' => 'alpha',
@@ -52,8 +46,6 @@ class CustomController extends Controller
                 'releavingDate' => 'date',
                 'userType' => 'string'
             ]);
-
-
             if ($validator->fails()) {
                 $response['errors'] = $validator->errors();
                 return response()->json($response);
@@ -61,7 +53,6 @@ class CustomController extends Controller
             try {
                 //todo:: for student
                 if($request->userType == 1){
-//                    dd('i am 1');
                     $statusModel = new Student();
                     $fields = $request->only($statusModel->getFillable());
                     $statusModel->fill($fields);
@@ -80,10 +71,10 @@ class CustomController extends Controller
                     $student = Student::updateOrCreate(['admission_no'=>$data['admission_no']],$data);
                     return response()->json($student);
                 }
-
-                //todo:: for Alumuni and teacher
+                //todo:: for teacher and alumuni
                 if($request->userType == 2){
-                    if ($request->isChecked == true){
+                    if ($request->isChecked == 1){
+                        /*dd('i am in checked');*/
                         $statusModel = new Alumuni();
                         $fields = $request->only($statusModel->getFillable());
                         $statusModel->fill($fields);
@@ -116,11 +107,9 @@ class CustomController extends Controller
                         'department' => $request_update['department'],
                         'teacher_id' => $request_update['teacher_id']
                     ];
-
                     $teacher = Teacher::updateOrCreate(['teacher_id'=>$data['teacher_id']],$data);
-
+                    return response()->json($teacher);
                 }
-
                 //todo:: for aolumuni
                 if($request->userType == 3){
                     $statusModel = new Alumuni();
@@ -138,38 +127,29 @@ class CustomController extends Controller
                         'releaving_date' => $request_update['releaving_date'],
                         'admission_no' => $request_update['admission_no']
                     ];
-                    $student = Alumuni::updateOrCreate(['admission_no'=>$data['admission_no']],$data);
-                    return response()->json($student);
+                    $alumuni = Alumuni::updateOrCreate(['admission_no'=>$data['admission_no']],$data);
+                    return response()->json($alumuni);
                 }
-                else{
-                    dd('i am co-ordinator');
+                if($request->userType == 4){
+                    $statusModel = new Coordinator();
+                    $fields = $request->only($statusModel->getFillable());
+                    $statusModel->fill($fields);
+                    $data = [
+                        'first_name' => $request_update['first_name'] ,
+                        'last_name' => $request_update['last_name'],
+                        'date_of_birth' => $request_update['date_of_birth'],
+                        'phone_number' => $request_update['phone_number'],
+                        'email' => $request_update['email'],
+                        'gender' =>$request_update['gender'],
+                        'address' => $request_update['address'],
+                        'coordiantor_id' => $request_update['coordiantor_id'],
+                    ];
+                    $coordinator = Coordinator::updateOrCreate(['coordiantor_id'=>$data['coordiantor_id']],$data);
+                    return response()->json($coordinator);
                 }
-
-
-
-                //todo:use either create or update based on presence of "id" and do on validation also.
-                /*if ($request->id == null){
-                    $student = Student::create($request_update);
-                    $student->save();
-                }
-                else{
-                    $student = Student::find($request_update->id);
-                    $student->update($request_update);
-                    $student->save();
-                }
-                //todo:remove status code, desc etc. make it like the one DepartmentController
-                if(filled($student)) {
-                    return response()->json(true);
-                }
-                return response()->json(false);*/
-
-
-
-
             }
             catch( QueryException  $exception){
                 return response()->json(['errors'=>$exception->errorInfo]);
             }
         }
-
 }

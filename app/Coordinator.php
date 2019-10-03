@@ -6,15 +6,15 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 
-class Teacher extends Model
+class Coordinator extends Model
 {
-    protected $table =  'teacher';
+    protected $table =  'coordinator';
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['first_name','last_name', 'date_of_birth', 'subject', 'phone_number', 'email','gender','address','department', 'teacher_id','status_id'];
+    protected $fillable = ['first_name','last_name', 'date_of_birth',  'phone_number', 'email','gender','coordiantor_id','address', 'status_id'];
 
     /**
      * The attributes excluded from the model's JSON form.

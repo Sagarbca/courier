@@ -16,7 +16,7 @@ class Alumuni extends Model
      *
      * @var array
      */
-    protected $fillable = ['first_name', 'date_of_birth', 'subject', 'phone_no', 'email','gender','address','releaving_date', 'admission_no','status_id'];
+    protected $fillable = ['first_name','last_name', 'date_of_birth', 'subject', 'phone_number  ', 'email','gender','address','releaving_date', 'admission_no','status_id'];
 
     /**
      * The attributes excluded from the model's JSON form.
