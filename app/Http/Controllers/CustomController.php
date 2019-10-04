@@ -8,6 +8,7 @@ use App\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Database\QueryException;
 class CustomController extends Controller
 {
     /**
@@ -48,7 +49,10 @@ class CustomController extends Controller
             ]);
             if ($validator->fails()) {
                 $response['errors'] = $validator->errors();
+                $response["Validation Error"] = 'Error';
                 return response()->json($response);
+
+                /*return response()->json($response);*/
             }
             try {
                 //todo:: for student
@@ -69,10 +73,12 @@ class CustomController extends Controller
                       'admission_no' => $request_update['admission_no']
                     ];
                     $student = Student::updateOrCreate(['admission_no'=>$data['admission_no']],$data);
-                    return response()->json($student);
+                    /*return response()->json($student);*/
+                    $response["true"] = 'student Created';
+                    return response()->json($response);
                 }
                 //todo:: for teacher and alumuni
-                if($request->userType == 2){
+                if($request->userType == 3){
                     if ($request->isChecked == 1){
                         /*dd('i am in checked');*/
                         $statusModel = new Alumuni();
@@ -104,14 +110,16 @@ class CustomController extends Controller
                         'email' => $request_update['email'],
                         'gender' =>$request_update['gender'],
                         'address' => $request_update['address'],
-                        'department' => $request_update['department'],
+                        'department_no' => $request_update['department_no'],
                         'teacher_id' => $request_update['teacher_id']
                     ];
                     $teacher = Teacher::updateOrCreate(['teacher_id'=>$data['teacher_id']],$data);
-                    return response()->json($teacher);
+                    /*return response()->json($teacher);*/
+                    $response["true"] = 'Teacher Created';
+                    return response()->json($response);
                 }
                 //todo:: for aolumuni
-                if($request->userType == 3){
+                if($request->userType == 2){
                     $statusModel = new Alumuni();
                     $fields = $request->only($statusModel->getFillable());
                     $statusModel->fill($fields);
@@ -128,7 +136,9 @@ class CustomController extends Controller
                         'admission_no' => $request_update['admission_no']
                     ];
                     $alumuni = Alumuni::updateOrCreate(['admission_no'=>$data['admission_no']],$data);
-                    return response()->json($alumuni);
+                    /*return response()->json($alumuni);*/
+                    $response["true"] = 'alumuni Created';
+                    return response()->json($response);
                 }
                 if($request->userType == 4){
                     $statusModel = new Coordinator();
@@ -145,11 +155,16 @@ class CustomController extends Controller
                         'coordiantor_id' => $request_update['coordiantor_id'],
                     ];
                     $coordinator = Coordinator::updateOrCreate(['coordiantor_id'=>$data['coordiantor_id']],$data);
-                    return response()->json($coordinator);
+                    /*return response()->json($coordinator);*/
+                    $response["true"] = 'CoOrdinator Created';
+                    return response()->json($response);
                 }
             }
+            //todo: error
             catch( QueryException  $exception){
-                return response()->json(['errors'=>$exception->errorInfo]);
+                /*return response()->json(['errors'=>$exception->errorInfo]);*/
+                $response['errorNew'] = response()->json($exception);
+                return response()->json(['errors'=>$response]);
             }
         }
 }
